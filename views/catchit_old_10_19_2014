@@ -1,0 +1,192 @@
+<html>
+<head>
+	<title>CatchIt</title>
+	<link rel="stylesheet" type="text/css" href="./../stylesheets/style.css">
+</head>
+<style type="text/css">
+
+
+*{
+	font-family:helvetica,arial,sans-serif;
+	text-align:center;
+}
+
+#wrapper{
+	width:540px;
+	height:960px;
+	margin:-10px -10px;
+	border:1px solid green;
+	background-image:url('./../images/catch/catch_background.png');
+	/*background-color:#81DAF5;*/
+	/*background: linear-gradient(#F78181, #F78181, #B40431);*/
+}
+#gameboard{
+	margin:225px 0px;
+}
+#catch_icon{
+	background: linear-gradient(#F78181, #FE2E2E, #F78181);
+	border-radius:5px;
+	border:2px solid #FF0000;
+	height:75px;
+	width:75px;
+}
+.lollypop{
+	width:80px;
+	height:130px;
+}
+
+.kid{
+width:170px;
+	height:200px;
+}
+#score{
+	font-size: 40px;
+	height:100px;
+	border-bottom:4px solid white;
+	color:white;
+}
+
+</style>
+<body>
+	<div id="wrapper">
+		<div id="score">
+			<img src="./../images/catch/words/level1/dog.png" style="position:absolute; width:80; height:100; left:50px; top:50px; border:2px solid white">
+			<p>Score: Level: </p>
+			
+		</div>
+		<div id="gameboard">
+				
+			<div id="pop">	
+			</div>	
+			
+			<div id="kid">				
+			</div>
+			
+		</div>
+	</div>
+
+</body>
+<script>
+function slice(array, index)
+{
+    var result = [];
+    for (var i = index || 0, j = 0; i < array.length; ++i, ++j)
+        result[j] = array[i];
+    return result;
+}
+
+	
+
+	
+	function Lollipop(top,left,id){
+		var letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+		this.info = {
+			top: top,
+			left: left,
+			id: id,
+			alphabet: letter[Math.floor(Math.random()*26)]
+		}
+	}	
+	Lollipop.prototype.drawLollipop = function (html){
+		var pop = document.getElementById('pop');	
+		pop.innerHTML = html;	
+	}
+
+	Lollipop.prototype.updateLollipop = function (lollipops, callback){
+			if (this.info.top != 580){
+			this.info.top += 5;
+			document.getElementById(this.info.id).style.top = this.info.top;
+			var output = document.getElementById('pop').innerHTML;
+			callback(output);
+			}
+			else{
+				var elem = document.getElementById(this.info.id)
+				if(elem){
+				elem.remove();
+					for(var id in lollipops){
+						if (id == this.info.id)	{
+						lollipops.splice(id, 1)
+						}
+					}	
+				}
+				
+			}
+		
+	}
+	
+
+	function Kid(top,left,word)
+	{
+		this.info = {
+			top:top,
+			left:left,
+			word:word
+		}
+		this.drawKid = function (){
+			var kid = document.getElementById('kid');
+			kid.innerHTML = "<img class='kid' src='./../images/catch/girl.png' style='position:absolute;  left:"+this.info.left+"px; top:"+this.info.top+"px;'>"
+		}
+		this.updateKid = function(key){
+			if(key === 38){
+				//Jump
+				this.info.top -= 150
+				this.drawKid();
+				this.info.top +=100
+				
+			}
+			else if(key === 37 && this.info.left >= 0){
+				//mpve left
+				this.info.left -= 20
+			}
+			else if(key === 39 && this.info.left <= 372){
+				this.info.left += 20
+
+			}
+			this.drawKid();
+		}
+	}
+
+
+	var lollipops  = [];
+	var id=1;
+	var html ='';
+
+	function gameLoop(){
+		for(var id in lollipops){
+			lollipops[id].updateLollipop(lollipops, function(output){
+				html = output;
+			});
+		}
+	}
+
+
+	function makeLollipops(){
+		var x = Math.floor(Math.random()*360)+ 80;
+		var y = 140;
+		var pop = new Lollipop(y, x, id);
+		html += "<img class='lollypop' id='" + pop.info.id +"' src='./../images/catch/alphabets/"+pop.info.alphabet+".png' style='position:absolute;left:" + pop.info.left + " ;top:"+ pop.info.top +";'>";
+
+		pop.drawLollipop(html);
+		
+		lollipops[id] = pop;
+		//console.log(lollipops);
+		id++;
+	
+	}
+	
+	var girl = new Kid(700,215,'ball')
+	girl.drawKid();
+
+	document.onkeydown = function(event){
+		if(event.keyCode === 37 || event.keyCode === 39){
+			girl.updateKid(event.keyCode)
+		}
+		else if(event.keyCode === 38){
+			girl.updateKid(event.keyCode)
+		}
+	}
+
+	setInterval(makeLollipops, 1200);
+	setInterval(gameLoop, 200);
+</script>
+</html>
