@@ -14,4 +14,8 @@ module.exports = function(app){
 	app.get('/popit', function(req, res) {
 		res.render('popit');
 	});
+
+	app.get('/popit_start', function(req, res) {
+		res.render('popit_start');
+	});
 }

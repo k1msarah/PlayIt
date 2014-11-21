@@ -1,0 +1,156 @@
+<html>
+<head>
+	<meta name="viewport" content="width=1080, user-scalable=no">
+	<title></title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/style_popit.css">
+	<script type="text/javascript">
+		function Balloon(id, x, y) {
+			this.info = { id: id, x: x, y: y, pop: false };
+		}
+
+		Balloon.prototype.drawBalloon = function (balloons) {
+			var el = document.getElementById('balloons');
+			var html = '';
+			for (var i in balloons) {
+				if (balloons[i].info.pop == false) {
+					html += "<img id='" + balloons[i].info.id + "' class='balloon' src='./../images/pop/balloon.png' style='left:" + balloons[i].info.x + "px; top:" + balloons[i].info.y + "px;'>";
+				}
+			}
+			el.innerHTML = html;
+		}
+
+		Balloon.prototype.updateBalloon = function (balloons, main, result) {
+			if (this.info.pop == false) {
+				this.info.y -= 20;
+				document.getElementById(this.info.id).style.top=this.info.y;
+			}
+			var pop = 0;
+			for (var i in balloons) {
+				if (balloons[i].info.pop == true) {
+					pop++;
+				}
+			}
+			if (pop == result) {
+				var sound = new Audio('./../sounds/pop/win.wav');
+				document.getElementById('instructions').innerHTML = "<h1 class='large'>Tap ? balloons</h1><h1 class='large'>before they fly away!</h1>";
+				document.getElementById('winner').innerHTML = "<h1>You win!</h1>";
+				document.getElementById('play_again').innerHTML = "<button class='pop_btn button'>Play Again</button>";
+				sound.play();
+				clearInterval(main);
+			}
+		}
+
+		Balloon.prototype.popBalloon = function (x, y, balloons) {
+			var that = this;
+			var x_cent = this.info.x + 100;
+			var y_cent = this.info.y + 130;
+			var delta = getDistance (x, x_cent, y, y_cent);
+			if (delta <= 100) {
+				var sound = new Audio('./../sounds/pop/balloon_pop.wav');
+				sound.play();
+				var el = document.getElementById(that.info.id)
+				el.remove();
+				this.info.pop = true;
+			}
+			function getDistance (x1, x2, y1, y2){
+				return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+			}
+		}
+
+		$(document).ready(function(){
+			var balloons;
+			var id;
+			var result;
+			var map;
+			var main;
+
+			function setInstructions() {
+				result = Math.ceil(Math.random()*9 + 1);
+				document.getElementById('instructions').children[0].innerHTML = "Tap " + result + " balloons";
+			}
+
+			function mainLoop() {
+				for (var id in balloons) {
+					balloons[id].updateBalloon(balloons, main, result);
+				}
+			}
+
+			function makeBalloonLoop() {
+				for (var i=1; i<=10; i++) {
+					var x = Math.floor(Math.random()*5);
+					var y = Math.floor(Math.random()*6);
+					if (map[y][x] == 1) {
+						map[y][x] = 0;
+					}
+					else {
+						while (map[y][x] == 0) {
+							x = Math.floor(Math.random()*5);
+							y = Math.floor(Math.random()*6);
+						}
+						map[y][x] = 0;
+					}
+					x = x * 200 + 40;
+					y = y * 260 + 120;
+					var balloon = new Balloon(i, x, y);
+					balloons[i] = balloon;
+					balloon.drawBalloon(balloons);
+				}
+			}
+
+			document.onclick = function(e) {
+				for (var id in balloons) {
+					balloons[id].popBalloon(e.x, e.y, balloons);
+				}
+			}
+
+			$('#start').click(function(){
+				balloons = [];
+				id = 1;
+				map = [
+					[0, 0, 0, 0, 0],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1]
+				];
+				document.getElementById('start').innerHTML = '';
+				makeBalloonLoop();
+				setInstructions();
+				main = setInterval(mainLoop, 100);
+			})
+
+			$('#play_again').on('click', function() {
+				balloons = [];
+				id = 1;
+				map = [
+					[0, 0, 0, 0, 0],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1],
+					[1, 1, 1, 1, 1]
+				];
+				document.getElementById('play_again').innerHTML = '';
+				document.getElementById('winner').innerHTML = "";
+				makeBalloonLoop();
+				setInstructions();
+				main = setInterval(mainLoop, 100);
+			})
+		})
+	</script>
+</head>
+<body>
+	<div id='wrapper'>
+		<div id='instructions'>
+			<h1 class='large'>Tap ? balloons</h1>
+			<h1 class='large'>before they fly away!</h1>
+		</div>
+		<div id='start'><button class='pop_btn button'>Start Game</button></div>
+		<div id='balloons'></div>
+		<div id='winner'></div>
+		<div id='play_again'></div>
+	</div>
+</body>
+</html>
