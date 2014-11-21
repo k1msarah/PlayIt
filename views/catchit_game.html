@@ -1,7 +1,6 @@
 <html>
 <head>
 	<title>CatchIt</title>
-	<link rel="stylesheet" type="text/css" href="./../stylesheets/style.css">
 </head>
 <style type="text/css">
 
@@ -17,8 +16,6 @@
 	margin:-10px -10px;
 	border:1px solid green;
 	background-image:url('./../images/catch/catch_background.png');
-	/*background-color:#81DAF5;*/
-	/*background: linear-gradient(#F78181, #F78181, #B40431);*/
 }
 #gameboard{
 	margin:225px 0px;
@@ -51,6 +48,13 @@ width:170px;
 #score img{
 	margin-top: -30px;
 }
+.huge{
+	position: absolute;
+	top: 400;
+	left:0;
+	font-size: 96px;
+	color:red;
+}
 
 </style>
 <body>
@@ -60,13 +64,14 @@ width:170px;
 			</div>
 			
 			<label>Score: </label>
-			<label>Level: </label>
 			<div id="word">
 			</div>			
 		</div>
 		<div id="pop">	
 		</div>	
-			
+		<div id="win">
+			<!-- <h1 class="huge"> Good Job!!!</h1> -->
+		</div>	
 		<div id="kid">				
 		</div>
 			
@@ -75,42 +80,61 @@ width:170px;
 
 </body>
 <script>
-function slice(array, index)
-{	console.log(index);
-    var result = [];
-    for (var i = index || 0, j = 0; i < array.length; ++i, ++j)
-        result[j] = array[i];
-    return result;
-}
+
 function CatchIt()
 {
 	var elem = document.getElementById('pop');
 	var girl = new Kid();
+	var letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+	this.lollipopLetters = [];	
 	this.word = new randomWord();
 	this.counter = 0;
 	this.lollipops = [];
-	this.alphabets = this.word.spellWord();
+	this.spelling = this.word.spellWord();
+	this.result = [];
+	var map = [1, 1, 1, 1, 1, 1]
+	this.i = 0
 
 	this.playGame = function()
 	{
-		this.makeLollipop();
+		
 		this.dropLollipops();
-		this.updateLollipop();
-		this.detectCollision();
+		this.updateLollipop();		
+		this.bringDown();
 	
+	}
+	this.makeLetterArray = function()
+	{
+		this.lollipopLetters.push(letter[Math.floor(Math.random()*26)]);
+		for (var i in this.spelling){
+			this.lollipopLetters.push(this.spelling[i]);
+		}
 	}
 	//create a new lollipop and add it to the game
 	this.makeLollipop = function()
-	{
+	{ 
+		var alphabet = this.lollipopLetters[Math.floor(Math.random() * 4)];
+		var x = Math.floor(Math.random() * 6);
+		if (map[x] == 1){
+			map[x] = 0;
+		}
+		else{
+			while (map[x] = 0){
+				x = Math.floor(Math.random()* 6);
+			}
+			map[x] = 0;
+		}
+
+		x = x * 80 + 20;	
+
 		this.counter++;
 
-		var newLolli = new Lollipop(this.counter);
-		newLolli.createRandomLollipop(0,460);
-
+		var newLolli = new Lollipop(this.counter, x, alphabet);
 		this.lollipops.push(newLolli);
 
-		elem.innerHTML += "<img class='lollypop' id='" + newLolli.id +"' src='./../images/catch/alphabets/"+newLolli.alphabet+".png' style='position:absolute;left:" + newLolli.x + " ;top:"+ newLolli.y +";'>";
+		elem.innerHTML += "<img class='lollypop' id='" + newLolli.id +"' src='./../images/catch/alphabets/"+alphabet+".png' style='position:absolute;left:" + newLolli.x + " ;top:"+ newLolli.y +";'>";
 
+		
 	}
 	this.dropLollipops = function()
 	{
@@ -137,20 +161,28 @@ function CatchIt()
 			}
 		}
 	}
-	this.checkLetter = function(letter)
-	{	console.log(this.alphabets);
-		for(i in this.alphabets)
-		{			
-			if(this.alphabets[i] == letter)
-			{
-				var result = document.getElementById('word')
+	this.checkLetter = function(letter)	
+	{	var sound = new Audio('./../sounds/catch/applause.mp3');
+		var sound2 = new Audio('./../sounds/catch/applause.mp3');
+		if(this.i < 4)
+		{
+			if(this.spelling[this.i] == letter){
+				var result = document.getElementById('word');
 				result.innerHTML += letter; 
+				this.i++;
 			}
+			if(this.i == 3){
+
+				var win = document.getElementById('win')
+				win.innerHTML = "<h1 class='huge'> Good Job!!!</h1>";
+				sound.play();
+				clearInterval(one);
+				clearInterval(two);
+			}		
 		}
 	}		
 	this.detectCollision = function()
 	{ 
-		
 		for(i in this.lollipops){
 			if(this.lollipops[i].exist == true){
 				var delta_y = girl.info.top - (this.lollipops[i].y + 130)
@@ -169,46 +201,61 @@ function CatchIt()
 			}	
 		}
 	}
-	this.moveKid = function()
+	this.bringDown = function()
 	{
-		document.onkeydown = function(e)
-		{
-			if(e.keyCode == 37)
-			{
-				girl.info.left -= 15;
+		if(girl.info.jump == true ){
+			if(girl.info.top != 700)
+			{ 
+				girl.info.top += 30;
+				girl.drawKid();
 			}
-			else if(e.keyCode == 39)
+			else
 			{
-				girl.info.left += 15;
+				girl.info.jump = false;
 			}
-			girl.drawKid();
-			
 		}
 	}
+	this.moveKid = function()
+	{	var that = this;
+		document.onkeydown = function(e)
+		{
+			if(e.keyCode == 37 && girl.info.left >= 0)
+			{
+				girl.info.left -= 15;
+				girl.drawKid();
+			}
+			else if(e.keyCode == 39 && girl.info.left <= 372)
+			{
+				girl.info.left += 15;
+				girl.drawKid();
+			}
+			else if(e.keyCode == 32)
+			{	
+				girl.info.top = 550;
+				girl.jump(girl.info.left, girl.info.top);
+				girl.info.jump = true;
+				that.detectCollision();
+				
+			}						
+		}
 
-	this.word.drawImage();
-	this.word.spellWord();	
-	//this.makeLollipop();
-	girl.drawKid();	
-	this.moveKid();	
-
-}
-
-function Lollipop(id){
-
-	var letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-	this.x = 0;//Math.floor(Math.random()*360)+ 100;
-	this.y = 120;
-	this.id = id;
-	this.alphabet = letter[Math.floor(Math.random()*26)];
-	this.exist = true;
-
-	this.createRandomLollipop = function(min, max)
-	{
-		random_x = Math.floor(Math.random()*(max-min+1)+min); 
-		this.x = random_x 
 	}
 
+	this.makeLetterArray();
+	this.word.drawImage();
+	this.word.spellWord();	
+	girl.drawKid();	
+	this.moveKid();	
+}
+
+function Lollipop(id, x, alphabet){
+
+	
+	this.x = x;//Math.floor(Math.random()*360)+ 100;
+	this.y = 120;
+	this.id = id;
+	this.alphabet = alphabet;
+	this.exist = true;
 
 }
 
@@ -216,20 +263,26 @@ function Lollipop(id){
 function Kid()
 {		this.info = {
 			top: 700,
-			left: 215
+			left: 215,
+			jump: false
 		}
 		this.drawKid = function()
 		{
 			var kid = document.getElementById('kid');		
 			kid.innerHTML = "<img class='kid' src='./../images/catch/girl.png' style='position:absolute;  left:"+this.info.left+"px; top:"+this.info.top+"px;'>"
 		}
+		this.jump = function(left, top)
+		{
+			var kid = document.getElementById('kid');		
+			kid.innerHTML = "<img class='kid' src='./../images/catch/girl.png' style='position:absolute;  left:"+left+"px; top:"+top+"px;'>"			
+		}
+		
 
 }
-
 function randomWord()
 {		
-	var words = [];
-		this.word = 'dog';
+	var words = ['bee','bow','bus','car','cat','cow','dog','egg','pig','ant'];
+		this.word = words[Math.floor(Math.random()*10)];
 		this.drawImage = function()
 		{
 			var image = document.getElementById('image');		
@@ -237,12 +290,9 @@ function randomWord()
 		}
 		this.spellWord = function()
 		{	var word = this.word.toUpperCase();
-			 return word.split('');
-			
+			 return word.split('');			
 		}
-
-}		
-	
+}			
 document.onkeydown = function(event){
 		if(event.keyCode === 37 || event.keyCode === 39){
 			CatchIt.updateKid(event.keyCode)
@@ -254,8 +304,8 @@ document.onkeydown = function(event){
 
 var game = new CatchIt();
 //game.playGame();
-
-setInterval('game.playGame()', 500);
+var one = setInterval('game.makeLollipop()',1200);
+var two = setInterval('game.playGame()', 150);
 
 </script>
 </html>
