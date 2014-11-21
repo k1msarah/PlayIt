@@ -55,6 +55,38 @@ width:170px;
 	font-size: 96px;
 	color:red;
 }
+#controls{
+	display: inline-block;
+	position: absolute;
+	width:520px;
+	height:50px;
+	top:910;
+	left:10;
+	;
+}
+
+#left{	
+	background-color: green;	
+}
+
+#middle{
+	background-color: red;
+}
+
+#right{
+	background-color: green;
+}
+.button{
+	font-size: 20px;
+	font-weight: bold;
+	display: inline-block;
+	width:140px;
+	height:50px;
+	color:white;
+	margin: 0px 5px;
+	vertical-align: top;
+	border-radius: 10px;
+}
 
 </style>
 <body>
@@ -74,7 +106,9 @@ width:170px;
 		</div>	
 		<div id="kid">				
 		</div>
-			
+		<div id="controls">
+			<button id="left" class="button"><</button><button id="middle" class="button">JUMP</button><button id="right" class="button">></button>
+		</div>	
 
 	</div>
 
@@ -238,6 +272,28 @@ function CatchIt()
 				
 			}						
 		}
+		document.getElementById('left').onclick = function(e){
+			if(girl.info.left >= 0)
+			{
+				girl.info.left -= 15;
+				girl.drawKid();
+			}
+
+		}
+		document.getElementById('right').onclick = function(e){
+			if(girl.info.left <= 372)
+			{
+				girl.info.left += 15;
+				girl.drawKid();
+			}
+
+		}
+		document.getElementById('middle').onclick = function(e){
+				girl.info.top = 550;
+				girl.jump(girl.info.left, girl.info.top);
+				girl.info.jump = true;
+				that.detectCollision();
+		}
 
 	}
 
@@ -281,7 +337,7 @@ function Kid()
 }
 function randomWord()
 {		
-	var words = ['bee','bow','bus','car','cat','cow','dog','egg','pig','ant'];
+	var words = ['bee','hat','bus','car','cat','cow','dog','egg','pig','ant'];
 		this.word = words[Math.floor(Math.random()*10)];
 		this.drawImage = function()
 		{
