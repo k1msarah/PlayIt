@@ -7,9 +7,7 @@
 	<script>
 	$(document).ready(function (){
 		var sound = new Audio('./../sounds/theme_song.mp3');
-		$('#play_music').click(function(){
-			sound.play();
-		})
+		sound.play();
 		// $('button').click(function (){
 		// 	var user_name = prompt("What is your name?");
 		// 	alert(user_name);
@@ -27,8 +25,6 @@
 			<button class='match_icon icon'><a href="matchit">MatchIt</a></button>
 			<button class='pop_icon icon'><a href="popit">PopIt</a></button>
 		</div>
-		<button id='play_music' class='icon'>Play Music</button>
 	</div>
-
 </body>
 </html>
