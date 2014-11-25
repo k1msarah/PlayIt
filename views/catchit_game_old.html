@@ -21,14 +21,12 @@
 	margin:225px 0px;
 	border:5px solid red;
 }
-#play{
-	font-size:36px;
+#catch_icon{
 	background: linear-gradient(#F78181, #FE2E2E, #F78181);
-	border-radius:20px;
+	border-radius:5px;
 	border:2px solid #FF0000;
-	height:150px;
-	width:200px;
-	color:white;
+	height:75px;
+	width:75px;
 }
 .lollypop{
 	
@@ -46,6 +44,7 @@
 	color:white;
 	text-align: center;
 }
+
 .kid{
 width:340px; /* 170 */
 	height:400px; /* 200 */
@@ -58,6 +57,7 @@ width:340px; /* 170 */
 	border:4px solid white;
 	color:white;
 	vertical-align: top;
+
 }
 #score img{
 
@@ -75,22 +75,11 @@ width: 200;
 	display: inline;
 }
 .huge{
-	width:1000px;
-	height:1000px;
-	background-color: red;
 	position: absolute;
-	top:350; /* 400 */
-	left:30;
-	font-size:60px;
-	color:white;
-	border-radius: 50%;
-	opacity: 0.9;
-	text-align: center;
-}
-.huge h1{
-	width:800;
-	margin-top:400;
-	margin-left:100px
+	top: 800; /* 400 */
+	left:0;
+	font-size: 190px;
+	color:red;
 }
 #controls{
 	display: inline-block;
@@ -98,8 +87,10 @@ width: 200;
 	width:1040px; /* 520 */
 	height:140px; /* 70 */
 	top:1520px; /* 880 */
-	left:20px; /* 10 */	
+	left:20px; /* 10 */
+	
 }
+
 .button{
 	font-size: 20px;
 	font-weight: bold;
@@ -117,7 +108,7 @@ width: 200;
 		<div id="score">
 			<div id="image"></div>			
 			<div>Score: <div id="points"></div></div>
-			<div>Word: <div id="word"></div></div>		
+			<div>Word: <div id="word"></div>	</div>		
 		</div>
 		<div id="pop">	
 		</div>	
@@ -157,8 +148,10 @@ function CatchIt()
 	]
 	this.i = 0
 	this.score = 0;
+
 	this.playGame = function()
-	{		
+	{
+		
 		this.dropLollipops();
 		this.updateLollipop();		
 		this.bringDown();
@@ -187,13 +180,17 @@ function CatchIt()
 			}
 			map[y][x] = 0;
 		}
+
 		x = x * 160 + 20;	//x = x * 80 + 20;
 		y = y * 300 + 25;	//y = y * 150 + 25;
 		this.counter++;
+
 		var newLolli = new Lollipop(this.counter, x, y, alphabet);
 		this.lollipops.push(newLolli);
+
 		//elem.innerHTML += "<img class='lollypop' id='" + newLolli.id +"' src='./../images/catch/alphabets/"+alphabet+".png' style='position:absolute;left:" + newLolli.x + " ;top:"+ newLolli.y +";'>";
 		elem.innerHTML += "<div class='lollypop' id='" + newLolli.id +"' style='position:absolute;left:" + newLolli.x + " ;top:"+ newLolli.y +";'><div class='alpha'>"+alphabet+"</div></div>";
+
 		
 	}
 	this.dropLollipops = function()
@@ -205,8 +202,10 @@ function CatchIt()
 			{
 				document.getElementById(this.lollipops[i].id).remove();
 				this.lollipops[i].exist = false;
-			}					
+			}		
+			
 		}
+
 	}
 	this.updateLollipop = function()
 	{
@@ -214,7 +213,8 @@ function CatchIt()
 			pop = document.getElementById(this.lollipops[i].id);
 			if(pop)
 			{
-				pop.style.top = this.lollipops[i].y;
+				pop.style.top = this.lollipops[i].y
+
 			}
 		}
 	}
@@ -233,8 +233,8 @@ function CatchIt()
 			}
 			if(this.i == 3){
 
-				var win = document.getElementById('wrapper')
-				win.innerHTML = "<div class='huge'><h1>Good Job!!!</h1><button id='play'>Play Again</button> </div>";
+				var win = document.getElementById('win')
+				win.innerHTML = "<h1 class='huge'> Good Job!!!</h1>";
 				sound.play();
 				clearInterval(one);
 				clearInterval(two);
@@ -320,6 +320,7 @@ function CatchIt()
 				girl.info.jump = true;
 				that.detectCollision();
 		}
+
 	}
 
 	this.makeLetterArray();
@@ -329,7 +330,9 @@ function CatchIt()
 	this.moveKid();	
 }
 
-function Lollipop(id, x, y, alphabet){	
+function Lollipop(id, x, y, alphabet){
+
+	
 	this.x = x;//Math.floor(Math.random()*360)+ 100;
 	this.y = y+ 160; //80;
 	this.id = id;
@@ -337,6 +340,8 @@ function Lollipop(id, x, y, alphabet){
 	this.exist = true;
 
 }
+
+
 function Kid()
 {		this.info = {
 			top: 1160, //700
@@ -352,7 +357,9 @@ function Kid()
 		{
 			var kid = document.getElementById('kid');		
 			kid.innerHTML = "<img class='kid' src='./../images/catch/girl.png' style='position:absolute;  left:"+left+"px; top:"+top+"px;'>"			
-		}		
+		}
+		
+
 }
 function randomWord()
 {		
@@ -377,9 +384,11 @@ document.onkeydown = function(event){
 			CatchIt.updateKid(event.keyCode)
 		}
 }
+
 var game = new CatchIt();
-var two = setInterval('game.playGame()', 150);
+//game.playGame();
 var one = setInterval('game.makeLollipop()',1200);
+var two = setInterval('game.playGame()', 150);
 
 </script>
 </html>
