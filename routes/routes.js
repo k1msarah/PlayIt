@@ -18,4 +18,8 @@ module.exports = function(app){
 	app.get('/popit_start', function(req, res) {
 		res.render('popit_start');
 	});
+
+	app.get('/popit_level2', function(req, res) {
+		res.render('popit_level2');
+	});
 }
