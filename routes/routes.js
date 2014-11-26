@@ -15,6 +15,10 @@ module.exports = function(app){
 		res.render('matchit');
 	});
 
+	app.get('/matchit_start', function(req, res) {
+		res.render('matchit_start');
+	})
+
 	app.get('/popit', function(req, res) {
 		res.render('popit');
 	});
