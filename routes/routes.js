@@ -7,6 +7,10 @@ module.exports = function(app){
 		res.render('catchit');
 	});
 
+	app.get('/catchit_game', function(req, res) {
+		res.render('catchit_game');
+	})
+
 	app.get('/matchit', function(req, res) {
 		res.render('matchit');
 	});
